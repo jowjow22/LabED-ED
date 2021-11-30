@@ -12,93 +12,137 @@ typedef struct DoubleWayList
 esse struct tem a diferença de ter um outro ponteiro, ele tem um que aponta para o proximo e outro que aponta para o anterior
 */
 
-ListaE *listaE_insere(ListaE *p, int info)
-{
-  ListaE *novo = (ListaE *)malloc(sizeof(ListaE));
-  novo->info = info;
-  novo->prox = p;
-  novo->ant = NULL;
-  if (p != NULL)
-    p->ant = novo;
-  return novo;
-}
+// ListaE *listaE_insere(ListaE *p, int info)
+// {
+//   ListaE *novo = (ListaE *)malloc(sizeof(ListaE));
+//   novo->info = info;
+//   novo->prox = p;
+//   novo->ant = NULL;
+//   if (p != NULL)
+//     p->ant = novo;
+//   return novo;
+// }
 
-DWList *insertInList(DWList *first, int key)
+DWList *allocates(int key)
 {
-  DWList *newNode = (DWList *)malloc(sizeof(DWList));
-  newNode->key = key;
+  DWList *newNodeAlloc = (DWList *)malloc(sizeof(DWList));
+  if (newNodeAlloc == NULL)
+  {
+    return NULL;
+  }
+  else
+  {
+    newNodeAlloc->key = key;
+    newNodeAlloc->next = NULL;
+    newNodeAlloc->previous = NULL;
+    return newNodeAlloc;
+  }
+}
+/*
+  a unica alteracao necessaria foi a adicao de uma nova atribuicao, no caso atribui-se nulo ao valor do ponteiro que referencia o anterior
+  a ele.
+*/
+
+DWList *initInsert(DWList *first, int key)
+{
+  DWList *newNode = allocates(key);
   newNode->next = first;
-  newNode->previous = NULL;
   if (first != NULL)
   {
-    first->previous = newNode
+    first->previous = newNode;
   }
   return newNode;
 }
+/*
+  Como estamos inserindo no inicio, e a posicao previa ja foi definida como nula, nao precisamos definir como nula novamente
+  apenas atribuimos a proxima posiçao como a antiga primeira posicao da lista. Aqui temos uma alteracao na funcao, caso a lista
+  nao esteja vazia, definimos o ponteiro anterior da primeira posicao da lista, como o novo Node que estamos criando
+*/
 
-void listaE_imprime(ListaE *p)
+void printNodeList(DWList *first)
 {
-  ListaE *paux;
-  if (p == NULL)
+  DWList *auxNode;
+  if (first == NULL)
+  {
+    printf("Empty List\n");
+  }
+  else
+  {
+    for (auxNode = first; auxNode != NULL; auxNode = auxNode->next)
+    {
+      printf("Key: %d\n", auxNode->key);
+    }
+  }
+}
+void printNodeListBackway(DWList *last)
+{
+  DWList *auxNode;
+  if (last == NULL)
+  {
     printf("\nLista vazia!");
-  for (paux = p; paux != NULL; paux = paux->prox)
-    printf("\n%d", paux->info);
+  }
+  for (auxNode = last; auxNode != NULL; auxNode = auxNode->previous)
+  {
+    printf("Key: %d\n", auxNode->key);
+  }
 }
 
-void listaE_imprime2(ListaE *p)
+DWList *searchInList(DWList *first, int key)
 {
-  ListaE *paux;
-  if (p == NULL)
-    printf("\nLista vazia!");
-  for (paux = p; paux != NULL; paux = paux->ant)
-    printf("\n%d", paux->info);
-}
-ListaE *listaE_busca(ListaE *p, int elem)
-{
-  ListaE *paux;
-  for (paux = p; paux != NULL; paux = paux->prox)
-    if (paux->info == elem)
-      return paux;
+  DWList *aux;
+  for (aux = first; aux != NULL; aux = aux->next)
+  {
+    if (aux->key == key)
+    {
+      return aux;
+    }
+  }
   return NULL;
 }
 
-ListaE *listaE_remove(ListaE **p, int elem)
+DWList *removeFromList(DWList **first, int key)
 {
-  ListaE *apagar, *anterior, *proximo;
-  apagar = listaE_busca(*p, elem);
-  if (apagar == NULL)
-    printf("\nElemento nao encontrado!");
+  DWList *toErase, *prev, *next;
+  toErase = searchInList(*first, key);
+  if (toErase == NULL)
+  {
+    printf("Element not found.\n");
+  }
   else
   {
-    if (apagar == *p)
+    if (toErase == *first)
     {
-      *p = apagar->prox;
-      (*p)->ant = NULL;
-      free(apagar);
+      *first = toErase->next;
+      (*first)->previous = NULL;
+      free(toErase);
+      toErase = NULL;
     }
     else
     {
-      anterior = apagar->ant;
-      proximo = apagar->prox;
-      anterior->prox = apagar->prox;
-      proximo->ant = apagar->ant;
-      free(apagar);
-      apagar = NULL;
+      prev = toErase->previous;
+      next = toErase->next;
+      prev->next = toErase->next;
+      next->previous = toErase->previous;
+      free(toErase);
+      toErase = NULL;
     }
   }
 }
 
 int main()
 {
-  ListaE *prim = NULL, *ult = NULL;
-  prim = listaE_insere(prim, 9);
-  ult = prim;
-  prim = listaE_insere(prim, 3);
-  prim = listaE_insere(prim, 2);
-  prim = listaE_insere(prim, 7);
-  listaE_imprime(prim);
-  listaE_remove(&prim, 7);
-  listaE_imprime(prim);
-  prim = listaE_insere(prim, 13);
-  listaE_imprime(prim);
+  DWList *first = NULL, *last = NULL;
+  first = initInsert(first, 9);
+  last = first;
+  first = initInsert(first, 3);
+  first = initInsert(first, 2);
+  first = initInsert(first, 7);
+  printNodeList(first);
+  printf("-------------------\n");
+  removeFromList(&first, 3);
+  printNodeList(first);
+  printf("-------------------\n");
+  first = initInsert(first, 13);
+  printNodeList(first);
+  printf("-------------------\n");
 }
