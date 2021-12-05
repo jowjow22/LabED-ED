@@ -32,6 +32,30 @@ void insertCircularList(Clist **pointer, int key)
     (*pointer)->next = aux;
   }
 }
+void locatedInsertionCircular(Clist **pointer, int key, int pos)
+{
+  assert(pointer);
+  Clist *aux = *pointer;
+  for (int i = 0; i <= pos; i++, aux = aux->next)
+  {
+    if (i == pos)
+    {
+      Clist *newNode = (Clist *)malloc(sizeof(Clist));
+      if (newNode != NULL)
+      {
+        newNode->key = key;
+        newNode->next = aux->next;
+        aux->next = newNode;
+        return;
+      }
+      else
+      {
+        printf("Error in new node creation\n");
+      }
+    }
+  }
+  printf("Invalid position for this list!\n");
+}
 
 void remotionCircular(Clist **pointer)
 {
@@ -89,4 +113,6 @@ int main()
   remotionCircular(&list);
   printList(list);
   printf("\n*************************\n");
+  locatedInsertionCircular(&list, 123, 3);
+  printList(list);
 }
