@@ -60,33 +60,37 @@ void initInsert(Node **first, int key)
   ponteiro da lista, ao auxiliar, assim adicionando um a mais na primeira posicao.
 */
 
-void locatedInsertion(Node **first, int searchKey, int newNodeKey)
+void locatedInsertion(Node **first, int searchNodePos, int newNodeKey)
 {
   assert(first);
-  Node *auxNewNode = allocates(newNodeKey);
   Node *auxNode = *first;
-  while (auxNode != NULL)
+  for (int i = 1; i <= searchNodePos; i++, auxNode = auxNode->next)
   {
-    if (auxNode->key == searchKey)
+    if (auxNode != NULL)
     {
-      auxNewNode->next = auxNode->next;
-      auxNode->next = auxNewNode;
-      return;
+      if (i == searchNodePos)
+      {
+        Node *auxNewNode = allocates(newNodeKey);
+        auxNewNode->next = auxNode->next;
+        auxNode->next = auxNewNode;
+      }
     }
     else
     {
-      auxNode = auxNode->next;
+      printf("Invalid position for this list size!\n");
+      break;
     }
   }
 }
 
 /*
   Comentários da Função base de insercao na metade, ou insercao localizada:
-   esta funcao eh como uma mistura entre a insercao no inicio e a busca, ela recebe como parametro o ponteiro de ponteiro do primeiro
-   elemento, a chave da qual voce quer inserir depois, e a chave do novo node, ela verifica se a lista nao é vazia, e caso nao seja, ela
-   aloca o novo node, e cria um auxiliar para a lista, apos isso faz um laço para buscar na lista um node com a mesma chave pesquisada do 
-   parametro, caso ele ache, ele define o proximo do novo node, como o proximo daquele node encontrado na lista, e define o proximo desse node
-   encontrado, como o novo node criado.
+  Essa função recebe como parametro, o ponteiro de ponteiro para o primeiro node da lista, a posição que deseja ser inserida após e a chave do novo node.
+  É criado um ponteiro auxiliar que recebe o endereço do primeiro nó da lista, após isso é criado um for que caminha até a posição desejada
+  passando de node em node, em todas as voltas do laço, ele verifica se o nó atual tem valor nulo, caso tenha, ou a lista está vazia, ou a 
+  posição desejada ainda não existe, sendo assim invalida. Caso a validação seja confirmada, ele verifica se o valor de i é igual ao desejado pelo
+  usuário, caso seja, ele cria um ponteiro auxiliar que recebe o endereço do novo node, e assim define o proximo do meu novo node, como o
+  próximo do meu node atual, e coloca o proximo do meu node atual como o node que acaba de ser criado, assim criando uma inserção localizada.
 */
 
 void removeFirst(Node **first)
@@ -110,6 +114,36 @@ void removeFirst(Node **first)
   atraves da funcao assert, apos isso, ele verifica se existe uma lista, caso nao exista ele para a execucao da funcao, caso exista ele cria
   um ponteiro auxiliar, e passa o primeiro endereco pra ele, apos isso ele coloca o primeiro endereco como o endereco do proximo e após isso
   ele libera a memoria.
+*/
+
+void locatedRemotion(Node **first, int removePos)
+{
+  Node *auxList = *first;
+  for (int i = 1; i < removePos; auxList = auxList->next, i++)
+  {
+    if (auxList != NULL)
+    {
+      if (i == removePos - 1)
+      {
+        Node *auxNext = auxList->next;
+        auxList->next = auxNext->next;
+        free(auxNext);
+        auxNext = NULL;
+      }
+    }
+    else
+    {
+      return;
+    }
+  }
+}
+
+/*
+Nessa função recebemos o ponteiro de ponteiro para o primeiro node da lista, é criado um ponteiro auxiliar para podermos trabalhar com essa lista.
+Após isso é criado um for que vai de 1, até o valor anterior ao desejado da remoção, e passa de nó em nó. A primeira coisa verificada é se a lista
+é nula, caso não seja, ele verifica se o valor de I é igual a posição anterior a desejada, caso seja, ele cria um ponteiro auxliar para o proximo do
+nó atual. Após isso é atribuido ao proximo do meu nó atual, o endereço de memória do nó posterior ao nó desejado na remoção. Por fim, libera-se a
+memória do nó proximo ao atual(ou seja, o nó pedido na remoção)
 */
 
 Node *searchNode(Node **first, int key)
@@ -146,7 +180,7 @@ void printNodeList(Node *first)
   {
     while (first != NULL)
     {
-      printf("\n%d\n", first->key);
+      printf("\nkey: %d\n", first->key);
       first = first->next;
     }
   }
@@ -168,20 +202,29 @@ main()
   aqui eu faço a inserçao de dois Nodes nessa lista, passando o endereço do ponteiro e sua respectiva chave
   */
   printNodeList(first);
+  printf("\n*************************\n");
   /*
   imprimo para verificar se tudo foi nos conformes
   */
   removeFirst(&first);
   printNodeList(first);
+  printf("\n*************************\n");
   /*
   removo o primeiro e imprimo novamente para verificar
   */
   initInsert(&first, 3);
   initInsert(&first, 4);
 
-  locatedInsertion(&first, 3, 9);
-
   printNodeList(first);
+  printf("\n*************************\n");
+
+  locatedInsertion(&first, 123, 9);
+  locatedInsertion(&first, 2, 9);
+  printNodeList(first);
+  printf("\n*************************\n");
+  locatedRemotion(&first, 3);
+  printNodeList(first);
+  printf("\n*************************\n");
 
   Node *searchResult = searchNode(&first, 3);
   if (searchResult == NULL)

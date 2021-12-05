@@ -10,6 +10,7 @@ typedef struct Node
 
 /*
  Usando a lista simples como referencia, a lista com cabeça não possui diferenças em seu struct
+ estou usando uma linguagem com falta de acentos e outras coisas algumas vezes por conta do meu teclado.
  */
 
 Node *createList()
@@ -160,11 +161,14 @@ int main()
   printNodeList(first->next);
   //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
   searchResult = searchNode(first->next, 312);
+  //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
   if (searchResult == NULL)
     printf("\nno nao encontrado\n");
   else
     printf("\n%d", searchResult->key);
   printf("\n");
   removeFirst(&first->next);
+  //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
   printNodeList(first->next);
+  //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
 }
