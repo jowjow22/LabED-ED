@@ -99,9 +99,66 @@ void printList(Clist *pointer)
   printf("key:%d\n", pointer->key);
 }
 
+Clist *searchNode(Clist **pointer, int key)
+{
+  Clist *aux = (*pointer)->next;
+  if (*pointer == NULL)
+  {
+    printf("Empty list\n");
+    return NULL;
+  }
+  do
+  {
+    if (key == aux->key)
+    {
+      return aux;
+    }
+    aux = aux->next;
+  } while (*pointer != aux);
+  return NULL;
+}
+Clist *searchNodeByPos(Clist **pointer, int pos)
+{
+  Clist *aux = (*pointer)->next;
+  int i = 1;
+  if (*pointer == NULL)
+  {
+    printf("Empty list\n");
+    return NULL;
+  }
+  do
+  {
+    if (i == pos)
+    {
+      return aux;
+    }
+    aux = aux->next;
+    i++;
+  } while (aux != *pointer);
+  return NULL;
+}
+
+void locatedRemotion(Clist **pointer, int pos)
+{
+  Clist *aux = searchNodeByPos(pointer, pos - 1);
+  if (aux != NULL)
+  {
+    Clist *toErase = aux->next;
+    Clist *nextToErase = toErase->next;
+    aux->next = nextToErase;
+    free(toErase);
+    toErase = NULL;
+  }
+  else
+  {
+    printf("Invalid position!\n");
+  }
+}
+
 int main()
 {
   Clist *list = NULL;
+  Clist *searchResult = NULL;
   insertCircularList(&list, 89);
   insertCircularList(&list, 25);
   printList(list);
@@ -114,5 +171,18 @@ int main()
   printList(list);
   printf("\n*************************\n");
   locatedInsertionCircular(&list, 123, 3);
+  printList(list);
+  printf("\n*************************\n");
+  searchResult = searchNode(&list, 123);
+  if (searchResult == NULL)
+  {
+    printf("Node not found!\n");
+  }
+  else
+  {
+    printf("Searched key: %d\n", searchResult->key);
+  }
+  printf("\n*************************\n");
+  locatedRemotion(&list, 2);
   printList(list);
 }
