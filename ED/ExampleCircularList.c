@@ -2,86 +2,91 @@
 #include <stdlib.h>
 #include <assert.h>
 
-typedef struct lista
+typedef struct CircularList
 {
-  int chave;
-  struct lista *prox;
-} TipoListaCircular;
+  int key;
+  struct CircularList *next;
+} Clist;
 
-void insereCircular(TipoListaCircular **p, int info)
+void insertCircularList(Clist **pointer, int key)
 {
-  assert(p);
-  if (*p == NULL)
+  assert(pointer);
+  if (*pointer == NULL)
   {
-    *p = (TipoListaCircular *)malloc(sizeof(TipoListaCircular));
-    if (*p != NULL)
+    *pointer = (Clist *)malloc(sizeof(Clist));
+    if (*pointer != NULL)
     {
-      (*p)->chave = info;
-      (*p)->prox = *p;
+      (*pointer)->key = key;
+      (*pointer)->next = *pointer;
     }
   }
   else
   {
-    TipoListaCircular *aux = (TipoListaCircular *)malloc(sizeof(TipoListaCircular));
+    Clist *aux = (Clist *)malloc(sizeof(Clist));
     if (aux == NULL)
+    {
       return;
-    aux->chave = info;
-    aux->prox = (*p)->prox;
-    (*p)->prox = aux;
+    }
+    aux->key = key;
+    aux->next = (*pointer)->next;
+    (*pointer)->next = aux;
   }
 }
-void removeCircular(TipoListaCircular **p)
+
+void remotionCircular(Clist **pointer)
 {
-  assert(p);
-  if (*p == NULL)
+  assert(pointer);
+  if (*pointer == NULL)
   {
-    printf("Lista vazia!");
+    printf("Empty list!\n");
     return;
   }
-  TipoListaCircular *pPrim = (*p)->prox;
-  TipoListaCircular *pPenult = (*p)->prox;
-  if (pPrim->prox != pPrim)
+  Clist *pointerFirst = (*pointer)->next;
+  Clist *pointerPenult = (*pointer)->next;
+  if (pointerFirst->next != pointerFirst)
   {
-    while (pPenult->prox != *p)
+    while (pointerPenult->next != *pointer)
     {
-      pPenult = pPenult->prox;
+      pointerPenult = pointerPenult->next;
     }
-    free(*p);
-    *p = pPenult;
-    pPenult->prox = pPrim;
+    free(*pointer);
+    *pointer = pointerPenult;
+    pointerPenult->next = pointerFirst;
   }
   else
   {
-    free(*p);
-    *p = NULL;
+    free(*pointer);
+    *pointer = NULL;
   }
 }
 
-void imprime(TipoListaCircular *p)
+void printList(Clist *pointer)
 {
-  TipoListaCircular *aux = p->prox;
-  if (p == NULL)
-    printf("\nLista Vazia!");
+  Clist *aux = pointer->next;
+  if (pointer == NULL)
+  {
+    printf("Empty list\n");
+  }
   do
   {
-    printf("\n%d", aux->chave);
-    aux = aux->prox;
-  } while (p != aux);
-  printf("\n%d", p->chave);
+    printf("key:%d\n", aux->key);
+    aux = aux->next;
+  } while (pointer != aux);
+  printf("key:%d\n", pointer->key);
 }
 
 int main()
 {
-  TipoListaCircular *lista = NULL;
-  insereCircular(&lista, 89);
-  insereCircular(&lista, 25);
-  insereCircular(&lista, 44);
-  insereCircular(&lista, 23);
-  insereCircular(&lista, 19);
-  insereCircular(&lista, 225);
-  insereCircular(&lista, 464);
-  insereCircular(&lista, 293);
-  imprime(lista);
-  //	removeCircular(&lista);
-  //	printf("\n%d", lista->chave);
+  Clist *list = NULL;
+  insertCircularList(&list, 89);
+  insertCircularList(&list, 25);
+  printList(list);
+  printf("\n*************************\n");
+  insertCircularList(&list, 31);
+  insertCircularList(&list, 32);
+  printList(list);
+  printf("\n*************************\n");
+  remotionCircular(&list);
+  printList(list);
+  printf("\n*************************\n");
 }

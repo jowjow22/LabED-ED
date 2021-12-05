@@ -51,7 +51,7 @@ Node *allocates(int key)
 }
 
 /*
-  A funcao aloccates nao tem diferenca entre a lista com cabeca e a lista simples
+  A função aloccates nao tem diferença entre a lista com cabeça e a lista simples
 */
 void initInsert(Node *list, int key)
 {
@@ -70,33 +70,37 @@ void initInsert(Node *list, int key)
 }
 
 /*
-  A primeira diferenca eh o parametro da funçao, que em vez de receber um ponteiro de ponteiro, recebe apenas o ponteiro, ja que a lista
+  A primeira diferenca é o parametro da função, que em vez de receber um ponteiro de ponteiro, recebe apenas o ponteiro, ja que a lista
   nunca será vazia, tendo sempre o primeiro nó criado em tempo de execucao. Ele verifica se o novo nó alocado é nulo, caso nao seja, ele
   atribui o proximo nó, desse nó criado, como o primeiro nó da lista (sem ser o cabeça), e após isso, ele coloca o proximo nó depois do 
   no cabeça, como a primeira posiçao atualizada que foi criada acima dele
 */
 
-void locatedInsertion(Node *first, int searchKey, int newNodeKey)
+void locatedInsertion(Node *first, int searchNodePos, int newNodeKey)
 {
-  Node *auxNewNode = allocates(newNodeKey);
+  assert(first);
   Node *auxNode = first;
-  while (auxNode != NULL)
+  for (int i = 1; i <= searchNodePos; i++, auxNode = auxNode->next)
   {
-    if (auxNode->key == searchKey)
+    if (auxNode != NULL)
     {
-      auxNewNode->next = auxNode->next;
-      auxNode->next = auxNewNode;
-      return;
+      if (i == searchNodePos)
+      {
+        Node *auxNewNode = allocates(newNodeKey);
+        auxNewNode->next = auxNode->next;
+        auxNode->next = auxNewNode;
+      }
     }
     else
     {
-      auxNode = auxNode->next;
+      printf("Invalid position for this list size!\n");
+      break;
     }
   }
 }
 /*
-   As unicas diferença nessa funcao eh que ela nao precisa verificar se a lista eh vazia, ja que sempre existirá o nó cabeça
-   e tambem, ela recebe um ponteiro, em vez de um ponteiro de ponteiro
+  A unica diferença é que ela recebe um ponteiro, em vez de um ponteiro de ponteiro, já que na main, passamos o ponteiro do proximo e não o 
+  ponteiro inicial
 */
 
 void printNodeList(Node *first)
@@ -109,7 +113,7 @@ void printNodeList(Node *first)
 }
 
 /*
-   A unica diferença nessa funcao eh que ela nao precisa verificar se a lista eh vazia, ja que sempre existirá o nó cabeça
+   A unica diferença nessa função é que ela não precisa verificar se a lista é vazia, ja que sempre existirá o nó cabeça
 */
 Node *searchNode(Node *first, int key)
 {
@@ -128,7 +132,8 @@ Node *searchNode(Node *first, int key)
   return NULL;
 }
 /*
-   A unica diferença nessa funcao eh que ela nao recebe ponteiro de ponteiro
+  A unica diferença é que ela recebe um ponteiro, em vez de um ponteiro de ponteiro, já que na main, passamos o ponteiro do proximo e não o 
+  ponteiro inicial
 */
 
 void removeFirst(Node **first)
@@ -146,7 +151,32 @@ void removeFirst(Node **first)
   }
 }
 /*
-   nao ha diferencas
+   não há diferenças
+*/
+void locatedRemotion(Node *first, int removePos)
+{
+  Node *auxList = first;
+  for (int i = 1; i < removePos; auxList = auxList->next, i++)
+  {
+    if (auxList != NULL)
+    {
+      if (i == removePos - 1)
+      {
+        Node *auxNext = auxList->next;
+        auxList->next = auxNext->next;
+        free(auxNext);
+        auxNext = NULL;
+      }
+    }
+    else
+    {
+      return;
+    }
+  }
+}
+/*
+  A unica diferença é que ela recebe um ponteiro, em vez de um ponteiro de ponteiro, já que na main, passamos o ponteiro do proximo e não o 
+  ponteiro inicial
 */
 
 int main()
@@ -157,18 +187,23 @@ int main()
   initInsert(first, 3);
   initInsert(first, 212);
   initInsert(first, 7);
-  locatedInsertion(first, 212, 32);
+  locatedInsertion(first->next, 2, 32);
   printNodeList(first->next);
+  locatedRemotion(first->next, 2);
+  printf("\n*************************\n");
+  printNodeList(first->next);
+  printf("\n*************************\n");
   //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
-  searchResult = searchNode(first->next, 312);
+  searchResult = searchNode(first->next, 212);
   //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
   if (searchResult == NULL)
     printf("\nno nao encontrado\n");
   else
-    printf("\n%d", searchResult->key);
-  printf("\n");
+    printf("\nsearched key: %d\n", searchResult->key);
+  printf("\n*************************\n\n");
   removeFirst(&first->next);
   //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
   printNodeList(first->next);
+  printf("\n*************************\n");
   //A diferenca aqui é que sempre passamos um a frente do nó cabeca nas funcoes
 }

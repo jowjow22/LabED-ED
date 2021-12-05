@@ -5,23 +5,12 @@
 typedef struct DoubleWayList
 {
   int key;
-  struct listaEnc *previous;
-  struct listaEnc *next;
+  struct DoubleWayList *previous;
+  struct DoubleWayList *next;
 } DWList;
 /*
 esse struct tem a diferença de ter um outro ponteiro, ele tem um que aponta para o proximo e outro que aponta para o anterior
 */
-
-// ListaE *listaE_insere(ListaE *p, int info)
-// {
-//   ListaE *novo = (ListaE *)malloc(sizeof(ListaE));
-//   novo->info = info;
-//   novo->prox = p;
-//   novo->ant = NULL;
-//   if (p != NULL)
-//     p->ant = novo;
-//   return novo;
-// }
 
 DWList *allocates(int key)
 {
@@ -100,10 +89,38 @@ DWList *searchInList(DWList *first, int key)
   return NULL;
 }
 
-DWList *removeFromList(DWList **first, int key)
+DWList *searchInListPosition(DWList *first, int pos)
+{
+  DWList *aux = first;
+  for (int i = 1; i <= pos; i++, aux = aux->next)
+  {
+    if (aux != NULL)
+    {
+      if (i == pos)
+      {
+        return aux;
+      }
+    }
+  }
+  return NULL;
+}
+DWList *removeFirst(DWList **first)
+{
+  DWList *aux = *first;
+  DWList *newFirst = aux->next;
+  if (aux != NULL)
+  {
+    free(aux);
+    aux == NULL;
+    newFirst->previous = NULL;
+    return newFirst;
+  }
+  return NULL;
+}
+void removeFromList(DWList **first, int pos)
 {
   DWList *toErase, *prev, *next;
-  toErase = searchInList(*first, key);
+  toErase = searchInListPosition(*first, pos);
   if (toErase == NULL)
   {
     printf("Element not found.\n");
@@ -121,8 +138,8 @@ DWList *removeFromList(DWList **first, int key)
     {
       prev = toErase->previous;
       next = toErase->next;
-      prev->next = toErase->next;
-      next->previous = toErase->previous;
+      prev->next = next;
+      next->previous = prev;
       free(toErase);
       toErase = NULL;
     }
@@ -138,11 +155,14 @@ int main()
   first = initInsert(first, 2);
   first = initInsert(first, 7);
   printNodeList(first);
-  printf("-------------------\n");
+  printf("\n*************************\n");
   removeFromList(&first, 3);
   printNodeList(first);
-  printf("-------------------\n");
+  printf("\n*************************\n");
   first = initInsert(first, 13);
   printNodeList(first);
-  printf("-------------------\n");
+  first = removeFirst(&first);
+  printf("\n*************************\n");
+  printNodeList(first);
+  printf("\n*************************\n");
 }
